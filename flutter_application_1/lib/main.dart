@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'login_page.dart';
 import 'register_page.dart';
-import 'home_page.dart'; // Import HomePage di sini
+import 'home_page.dart'; 
 
-void main() {
+void main() async {
+  await GetStorage.init();
   runApp(MyApp());
 }
 
@@ -12,16 +14,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false, // Menghilangkan logo debug
+      debugShowCheckedModeBanner: false, // ini kode buat ngilangin logo debug
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/register', // Halaman awal saat aplikasi dijalankan
+      initialRoute: '/home', // 
       routes: {
         '/login': (context) => LoginPage(), // Rute ke LoginPage
         '/register': (context) => RegisterPage(), // Rute ke RegisterPage
-        '/home': (context) => HomePage(email: ''), // Rute ke HomePage, diisi kosong untuk contoh
+        '/home': (context) => HomePage(), // Rute ke HomePage
       },
     );
   }

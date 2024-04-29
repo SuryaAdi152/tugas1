@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'register_page.dart'; // Asumsi register_page.dart berada di direktori yang sama.
 import 'home_page.dart'; // Tambahkan ini untuk mengakses HomePage
 
@@ -12,6 +14,13 @@ class _LoginPageState extends State<LoginPage> {
   String _email = '';
   String _password = '';
   bool _passwordVisible = false;
+
+  final dio = Dio();
+  final myStorage = GetStorage();
+  final apiUrl = 'https://mobileapis.manpits.xyz/api';
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: <Widget>[
               TextFormField(
+                controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
@@ -45,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 20),
               TextFormField(
+                controller: passwordController,
                 obscureText: !_passwordVisible,
                 decoration: InputDecoration(
                   labelText: 'Password',
@@ -52,7 +63,9 @@ class _LoginPageState extends State<LoginPage> {
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                      _passwordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
@@ -76,13 +89,8 @@ class _LoginPageState extends State<LoginPage> {
                   backgroundColor: Colors.deepPurple,
                 ),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage(email: _email)),
-                    );
-                  }
+                  goLogin(context, dio, myStorage, apiUrl, emailController,
+                      passwordController);
                 },
                 child: Text('Login'),
               ),
@@ -100,5 +108,29 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+}
+
+void goLogin(BuildContext context, dio, myStorage, apiUrl, emailController,
+    passwordController) async {
+  try {
+    final response = await dio.post(
+      '$apiUrl/login',
+      data: {
+        'email': emailController.text,
+        'password': passwordController.text,
+      },
+    );
+    print(response.data);
+
+    myStorage.write('token', response.data['data']['token']);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+    
+  } on DioException catch (e) {
+    print('${e.response} - ${e.response?.statusCode}');
   }
 }

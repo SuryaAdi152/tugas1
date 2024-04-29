@@ -1,6 +1,8 @@
 // File: register_page.dart
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'login_page.dart'; // Asumsi login_page.dart berada di direktori yang sama.
+import 'package:get_storage/get_storage.dart';
+import 'login_page.dart'; 
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -12,6 +14,14 @@ class _RegisterPageState extends State<RegisterPage> {
   String _email = '';
   String _password = '';
   bool _passwordVisible = false;
+
+  final dio = Dio();
+  final myStorage = GetStorage();
+  final apiUrl = 'https://mobileapis.manpits.xyz/api';
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,27 +37,21 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             children: <Widget>[
               TextFormField(
+                controller: nameController,
                 decoration: InputDecoration(
-                  labelText: 'Email',
+                  labelText: 'Nama Lengkap',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.email),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
+               
                 onSaved: (value) => _email = value!,
               ),
               SizedBox(height: 20),
               TextFormField(
-                obscureText: !_passwordVisible,
+                controller: emailController,
+                obscureText: _passwordVisible,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: 'Email',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: IconButton(
@@ -61,28 +65,19 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
+               
                 onChanged: (value) => _password = value,
               ),
               SizedBox(height: 20),
               TextFormField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Confirm Password',
+                  labelText: 'Password',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock_outline),
                 ),
-                validator: (value) {
-                  if (value != _password) {
-                    return 'Password does not match';
-                  }
-                  return null;
-                },
+           
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -91,25 +86,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   backgroundColor: Colors.deepPurple, // Warna background tombol
                 ),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          content: Text('Email: $_email\nPassword: $_password'),
-                        );
-                      },
-                    );
-                    // Setelah menampilkan dialog, Anda mungkin ingin navigasi ke LoginPage
-                    // Navigator.pushReplacementNamed(context, '/login');
-                  }
+                  goRegister(context, dio, apiUrl, nameController, emailController, passwordController);
                 },
                 child: Text('Register'),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/login');
+                   Navigator.pushReplacementNamed(context, '/login');
                 },
                 child: Text(
                   'Already have an account? Login here!',
@@ -121,5 +104,24 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+  }
+}
+
+void goRegister(BuildContext context, dio, apiUrl, nameController,
+    emailController, passwordController) async {
+  try {
+    final response = await dio.post(
+      '$apiUrl/register',
+      data: {
+        'name': nameController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+      },
+    );
+    print(response.data);
+    Navigator.pushReplacementNamed(context, '/login');
+   
+  } on DioException catch (e) {
+    print('${e.response} - ${e.response?.statusCode}');
   }
 }
