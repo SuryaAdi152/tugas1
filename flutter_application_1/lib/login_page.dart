@@ -23,6 +23,26 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController passwordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      checkLoginStatus();
+    });
+  }
+
+  void checkLoginStatus() {
+    final token = myStorage.read('token');
+    if (token != null) {
+      // Jika pengguna sudah login, arahkan ke halaman login page
+         Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

@@ -35,6 +35,32 @@ class HomePage extends StatelessWidget {
               child: Text('Cek User'),
             ),
 
+             SizedBox(height: 20),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.deepPurple,
+              ),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/list-user'); // Log out action
+              },
+              child: Text('Lihat List User'),
+            ),
+
+            SizedBox(height: 20),
+
+              ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.deepPurple,
+              ),
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/add-user'); // Log out action
+              },
+              child: Text('Tambahkan User'),
+            ),
+
             SizedBox(height: 20),
 
             ElevatedButton(
