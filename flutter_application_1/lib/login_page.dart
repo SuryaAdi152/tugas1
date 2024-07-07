@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'register_page.dart'; // Asumsi register_page.dart berada di direktori yang sama.
-import 'home_page.dart'; // Tambahkan ini untuk mengakses HomePage
+import 'register_page.dart'; 
+import 'home_page.dart'; 
 
 class LoginPage extends StatefulWidget {
   @override
@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Login"),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Color.fromARGB(255, 126, 208, 231),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -106,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: Color.fromARGB(255, 126, 208, 231),
                 ),
                 onPressed: () {
                   goLogin(context, dio, myStorage, apiUrl, emailController,
@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: Text(
                   "Don't have an account? Register here!",
-                  style: TextStyle(color: Colors.deepPurple),
+                  style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
                 ),
               ),
             ],

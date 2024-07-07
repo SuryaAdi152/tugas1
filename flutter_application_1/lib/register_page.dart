@@ -1,4 +1,3 @@
-// File: register_page.dart
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -28,7 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Register'),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Color.fromARGB(255, 126, 208, 231),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -41,17 +40,41 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: InputDecoration(
                   labelText: 'Nama Lengkap',
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+                  prefixIcon: Icon(Icons.person),
                 ),
-               
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Tolong Masukan Nama';
+                  }
+                  return null;
+                },
                 onSaved: (value) => _email = value!,
               ),
               SizedBox(height: 20),
               TextFormField(
                 controller: emailController,
-                obscureText: _passwordVisible,
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.email),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Tolong masukan alamat email';
+                  }
+                  if (!value.contains('@')) {
+                    return 'Masukan alamat email yang valid';
+                  }
+                  return null;
+                },
+                onSaved: (value) => _email = value!,
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: passwordController,
+                obscureText: !_passwordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Password',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
                   suffixIcon: IconButton(
@@ -65,38 +88,57 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                 ),
-               
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Tolong masukan password';
+                  }
+                  return null;
+                },
                 onChanged: (value) => _password = value,
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
-           
               ),
               SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white, // Warna teks tombol
-                  backgroundColor: Colors.deepPurple, // Warna background tombol
+                  backgroundColor: Color.fromARGB(255, 126, 208, 231), // Warna background tombol
                 ),
                 onPressed: () {
-                  goRegister(context, dio, apiUrl, nameController, emailController, passwordController);
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    goRegister(context, dio, apiUrl, nameController, emailController, passwordController);
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Error'),
+                            
+                          content: Text('Silahkan masukan data terlebih dahulu'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('OK'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
                 child: Text('Register'),
               ),
               TextButton(
                 onPressed: () {
-                   Navigator.pushReplacementNamed(context, '/login');
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
                 },
                 child: Text(
-                  'Already have an account? Login here!',
-                  style: TextStyle(color: Colors.deepPurple),
+                  'Sudah punya account? Login disini!',
+                  style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
                 ),
               ),
             ],
@@ -119,8 +161,10 @@ void goRegister(BuildContext context, dio, apiUrl, nameController,
       },
     );
     print(response.data);
-    Navigator.pushReplacementNamed(context, '/login');
-   
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
   } on DioException catch (e) {
     print('${e.response} - ${e.response?.statusCode}');
   }
